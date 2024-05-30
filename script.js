@@ -107,7 +107,13 @@ App.prototype.doBook = function (url, opts) {
     try {
         this.state.book = ePub(url, opts);
         this.qs(".book").innerHTML = "";
-        this.state.rendition = this.state.book.renderTo(this.qs(".book"), {});
+
+        let renditionOptions = {};
+        if (this.getChipActive("vertical-scroll") == "true") {
+            renditionOptions.flow = "scrolled-doc";
+        }
+
+        this.state.rendition = this.state.book.renderTo(this.qs(".book"), renditionOptions);
     } catch (err) {
         this.fatal("error loading book", err);
         throw err;
@@ -131,6 +137,10 @@ App.prototype.doBook = function (url, opts) {
     this.state.rendition.on("started", this.onRenditionStartedRestorePos.bind(this));
     this.state.rendition.on("displayError", this.fatal.bind(this, "error rendering book"));
 
+    if (this.getChipActive("vertical-scroll") == "true") {
+        this.state.rendition.on("displayed", this.attachScrollListener.bind(this));
+    }
+
     this.state.rendition.display();
 
     if (this.state.dictInterval) window.clearInterval(this.state.dictInterval);
@@ -138,8 +148,21 @@ App.prototype.doBook = function (url, opts) {
     this.doDictionary(null);
 };
 
+App.prototype.attachScrollListener = function () {
+    const scrollableEl = this.qs(".book .epub-container");
+    if (scrollableEl) {
+        scrollableEl.addEventListener("scroll", this.onBookScroll.bind(this, scrollableEl));
+    }
+};
+
+App.prototype.onBookScroll = function (scrollableEl) {
+    if (scrollableEl.scrollTop + scrollableEl.clientHeight >= scrollableEl.scrollHeight - 100) {
+        // this.state.rendition.next();
+    }
+};
+
 App.prototype.loadSettingsFromStorage = function () {
-    ["theme", "font", "font-size", "line-spacing", "margin", "progress", "disable-click-scroll"].forEach(container => this.restoreChipActive(container));
+    ["theme", "font", "font-size", "line-spacing", "margin", "progress", "disable-click-scroll", "vertical-scroll"].forEach(container => this.restoreChipActive(container));
 };
 
 App.prototype.restoreChipActive = function (container) {

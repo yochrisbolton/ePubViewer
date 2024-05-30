@@ -94,6 +94,7 @@
     align-items: stretch;
     -webkit-justify-content: stretch;
     justify-content: stretch;
+    height: 100%;
 }
 
 .app .book > div {
