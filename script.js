@@ -139,7 +139,7 @@ App.prototype.doBook = function (url, opts) {
 };
 
 App.prototype.loadSettingsFromStorage = function () {
-    ["theme", "font", "font-size", "line-spacing", "margin", "progress"].forEach(container => this.restoreChipActive(container));
+    ["theme", "font", "font-size", "line-spacing", "margin", "progress", "disable-click-scroll"].forEach(container => this.restoreChipActive(container));
 };
 
 App.prototype.restoreChipActive = function (container) {
@@ -364,6 +364,7 @@ App.prototype.onKeyUp = function (event) {
 
 App.prototype.onRenditionClick = function (event) {
     try {
+        if (this.getChipActive("disable-click-scroll") == "true") return;
         if (event.target.tagName.toLowerCase() == "a" && event.target.href) return;
         if (event.target.parentNode.tagName.toLowerCase() == "a" && event.target.parentNode.href) return;
         if (window.getSelection().toString().length !== 0) return;
