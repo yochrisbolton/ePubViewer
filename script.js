@@ -42,13 +42,6 @@ let App = function (el) {
         if (event.keyCode == 13) this.qs(".sidebar .search-bar .search-button").click();
     });
     this.qs(".sidebar .search-bar .search-button").addEventListener("click", this.onSearchClick.bind(this));
-    this.qs(".sidebar-wrapper").addEventListener("click", event => {
-        try {
-            if (event.target.classList.contains("sidebar-wrapper")) event.target.classList.add("out");
-        } catch (err) {
-            this.fatal("error hiding sidebar", err);
-        }
-    });
     this.qsa(".chips[data-chips]").forEach(el => {
         Array.from(el.querySelectorAll(".chip[data-value]")).forEach(cel => cel.addEventListener("click", event => {
             this.setChipActive(el.dataset.chips, cel.dataset.value);
@@ -56,7 +49,6 @@ let App = function (el) {
     });
     this.qs("button.prev").addEventListener("click", () => this.state.rendition.prev());
     this.qs("button.next").addEventListener("click", () => this.state.rendition.next());
-    this.qs("button.open").addEventListener("click", () => this.doOpenBook());
 
     try {
         this.qs(".bar .loc").style.cursor = "pointer";
@@ -259,9 +251,6 @@ App.prototype.doReset = function () {
         book: null,
         rendition: null
     };
-    this.qs(".sidebar-wrapper").classList.add("out");
-    this.qs(".bar .book-title").innerHTML = "";
-    this.qs(".bar .book-author").innerHTML = "";
     this.qs(".bar .loc").innerHTML = "";
     this.qs(".search-results").innerHTML = "";
     this.qs(".search-box").value = "";
@@ -272,9 +261,7 @@ App.prototype.doReset = function () {
     this.qs(".info .series-name").innerHTML = "";
     this.qs(".info .series-index").innerHTML = "";
     this.qs(".info .author").innerHTML = "";
-    this.qs(".info .description").innerHTML = "";
     this.qs(".book").innerHTML = '<div class="empty-wrapper"><div class="empty"><div class="app-name">ePubViewer</div><div class="message"><a href="javascript:ePubViewer.doOpenBook();" class="big-button">Open a Book</a></div></div></div>';
-    this.qs(".sidebar-button").classList.add("hidden");
     this.qs(".bar button.prev").classList.add("hidden");
     this.qs(".bar button.next").classList.add("hidden");
     this.doDictionary(null);
@@ -295,7 +282,6 @@ App.prototype.el = function (t, c) {
 };
 
 App.prototype.onBookReady = function (event) {
-    this.qs(".sidebar-button").classList.remove("hidden");
     this.qs(".bar button.prev").classList.remove("hidden");
     this.qs(".bar button.next").classList.remove("hidden");
 
@@ -360,15 +346,11 @@ App.prototype.onRenditionRelocated = function (event) {
 
 App.prototype.onBookMetadataLoaded = function (metadata) {
     console.log("metadata", metadata);
-    this.qs(".bar .book-title").innerText = metadata.title.trim();
-    this.qs(".bar .book-author").innerText = metadata.creator.trim();
     this.qs(".info .title").innerText = metadata.title.trim();
     this.qs(".info .author").innerText = metadata.creator.trim();
     if (!metadata.series || metadata.series.trim() == "") this.qs(".info .series-info").classList.add("hidden");
     this.qs(".info .series-name").innerText = metadata.series.trim();
     this.qs(".info .series-index").innerText = metadata.seriesIndex.trim();
-    this.qs(".info .description").innerText = metadata.description;
-    if (sanitizeHtml) this.qs(".info .description").innerHTML = sanitizeHtml(metadata.description);
 };
 
 App.prototype.onBookCoverLoaded = function (url) {
@@ -414,7 +396,6 @@ App.prototype.onRenditionClick = function (event) {
     let b = null;
     if (x > wrapper.clientWidth - 20) {
         event.preventDefault();
-        this.doSidebar();
     } else if (x < third) {
         event.preventDefault();
         this.state.rendition.prev();
@@ -781,10 +762,6 @@ App.prototype.onSearchClick = function (event) {
         });
         this.qs(".app .sidebar .search-results").appendChild(resultsEl);
     }).catch(err => this.fatal("error searching book", err));
-};
-
-App.prototype.doSidebar = function () {
-    this.qs(".sidebar-wrapper").classList.toggle('out');
 };
 
 let ePubViewer = null;

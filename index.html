@@ -21,21 +21,26 @@
         <div class="dictionary-wrapper hidden">
             <div class="dictionary"></div>
         </div>
-        <div class="sidebar-wrapper out">
+        <div class="error hidden">
+            <div class="error-title"></div>
+            <div class="error-description"></div>
+            <div class="error-info"></div>
+            <div class="error-dump"></div>
+        </div>
+        <div class="main">
             <div class="sidebar">
-                <div class="tab-list">
-                    <a data-tab="toc" class="item">
-                        <i class="icon material-icons-outlined">list</i>
-                    </a>
-                    <a data-tab="search" class="item">
-                        <i class="icon material-icons-outlined">search</i>
-                    </a>
-                    <a data-tab="info" class="item">
-                        <i class="icon material-icons-outlined">info</i>
-                    </a>
-                    <a data-tab="settings" class="item">
-                        <i class="icon material-icons-outlined">settings</i>
-                    </a>
+                <div class="tab info" data-tab="info">
+                    <div class="cover-wrapper">
+                        <img src="" alt="" class="cover">
+                    </div>
+                    <div class="title"></div>
+                    <div class="series-info">
+                        <span class="series-name"></span>
+                        <span class="divider"> - </span>
+                        <span class="series-index"></span>
+                    </div>
+                    <div class="author"></div>
+                    <div class="description"></div>
                 </div>
                 <div class="tab-container">
                     <div class="tab" data-tab="toc">
@@ -50,19 +55,6 @@
                         </div>
                         <div class="search-results"></div>
                     </div>
-                    <div class="tab info" data-tab="info">
-                        <div class="cover-wrapper">
-                            <img src="" alt="" class="cover">
-                        </div>
-                        <div class="title"></div>
-                        <div class="series-info">
-                            <span class="series-name"></span>
-                            <span class="divider"> - </span>
-                            <span class="series-index"></span>
-                        </div>
-                        <div class="author"></div>
-                        <div class="description"></div>
-                    </div>
                     <div class="tab settings" data-tab="settings">
                         <div class="setting">
                             <div class="setting-label">Themes</div>
@@ -74,9 +66,11 @@
                                 <div class="theme chip" style="background: #333; color: #eee;" data-value="#333;#eee">A
                                 </div>
                                 <div class="theme chip" style="background: #f5deb3; color: #000;"
-                                    data-value="#f5deb3;#000">A</div>
+                                    data-value="#f5deb3;#000">A
+                                </div>
                                 <div class="theme chip" style="background: #111; color: #f5deb3;"
-                                    data-value="#111;#f5deb3">A</div>
+                                    data-value="#111;#f5deb3">A
+                                </div>
                                 <div class="theme chip" style="background: #111b21; color: #e8e8e8;"
                                     data-value="#111b21;#e8e8e8">A</div>
                             </div>
@@ -87,13 +81,15 @@
                                 <div class="font chip" style="font-family: 'Arial', Arimo, Liberation Sans, sans-serif;"
                                     data-value="'Arial', Arimo, Liberation Sans, sans-serif">Arial</div>
                                 <div class="font chip" style="font-family: 'Lato', sans-serif;"
-                                    data-value="'Lato', sans-serif">Lato</div>
+                                    data-value="'Lato', sans-serif">
+                                    Lato</div>
                                 <div class="font chip" style="font-family: 'Georgia', Liberation Serif, serif;"
                                     data-value="'Georgia', Liberation Serif, serif">Georgia</div>
                                 <div class="font chip"
                                     style="font-family: 'Times New Roman', Tinos, Liberation Serif, Times, serif;"
                                     data-value="'Times New Roman', Tinos, Liberation Serif, Times, serif"
-                                    data-default="true">Times New Roman</div>
+                                    data-default="true">
+                                    Times New Roman</div>
                                 <div class="font chip" style="font-family: 'Arbutus Slab', serif;"
                                     data-value="'Arbutus Slab', serif">Arbutus Slab</div>
                             </div>
@@ -179,56 +175,30 @@
                                     All</a>
                             </div>
                         </div>
-                        <div class="setting">
-                            <div class="setting-label">About</div>
-                            <div class="setting-content">
-                                ePubViewer v3.1.0
-                                <br /> Copyright 2019
-                                <a href="https://pgaskin.net">Patrick Gaskin</a>
-                                <br />
-                                <a href="https://github.com/pgaskin/ePubViewer">Code</a> |
-                                <a href="https://github.com/pgaskin/ePubViewer/issues">Report an issue</a>
-                                <br />
-                                <br /> This app requires Microsoft Edge 15+, Mozilla Firefox 50+, Chrome 50+, or Safari
-                                10+.
-                            </div>
-                        </div>
                     </div>
                 </div>
+                <div class="tab-list">
+                    <a data-tab="toc" class="item">
+                        <i class="icon material-icons-outlined">list</i>
+                    </a>
+                    <a data-tab="search" class="item">
+                        <i class="icon material-icons-outlined">search</i>
+                    </a>
+                    <a data-tab="settings" class="item">
+                        <i class="icon material-icons-outlined">settings</i>
+                    </a>
+                </div>
             </div>
-        </div>
-        <div class="error hidden">
-            <div class="error-title"></div>
-            <div class="error-description"></div>
-            <div class="error-info"></div>
-            <div class="error-dump"></div>
-        </div>
-        <div class="bar">
-            <div class="left">
-                <button class="open">
-                    <i class="icon material-icons-outlined">open_in_browser</i>
-                </button>
-            </div>
-            <div class="title">
-                <span class="book-title"></span>
-                <span class="divider"> - </span>
-                <span class="book-author"></span>
-            </div>
-            <div class="right">
-                <button class="sidebar-button hidden" onclick="ePubViewer.doSidebar()">
-                    <i class="icon material-icons-outlined">menu</i>
-                </button>
-            </div>
-        </div>
-        <div class="book">
-            <div class="empty-wrapper">
-                <div class="empty">
-                    <div class="app-name">ePubViewer</div>
-                    <div class="message">
-                        Unknown error. If this message does not disappear in a few seconds, try using a different
-                        browser (Chrome or Firefox), and
-                        if the issue still persists,
-                        <a href="https://github.com/pgaskin/ePubViewer">report it here</a>.
+            <div class="book">
+                <div class="empty-wrapper">
+                    <div class="empty">
+                        <div class="app-name">ePubViewer</div>
+                        <div class="message">
+                            Unknown error. If this message does not disappear in a few seconds, try using a different
+                            browser (Chrome or Firefox), and
+                            if the issue still persists,
+                            <a href="https://github.com/pgaskin/ePubViewer">report it here</a>.
+                        </div>
                     </div>
                 </div>
             </div>
