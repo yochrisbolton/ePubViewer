@@ -161,6 +161,16 @@ App.prototype.onBookScroll = function (scrollableEl) {
     }
 };
 
+App.prototype.reloadBook = function () {
+    if (this.state.book) {
+        const currentLocation = this.state.rendition.currentLocation();
+        this.doBook(this.state.book.url, this.state.book.options);
+        if (currentLocation) {
+            this.state.rendition.display(currentLocation.start.cfi);
+        }
+    }
+};
+
 App.prototype.loadSettingsFromStorage = function () {
     ["theme", "font", "font-size", "line-spacing", "margin", "progress", "disable-click-scroll", "vertical-scroll"].forEach(container => this.restoreChipActive(container));
 };
@@ -182,8 +192,12 @@ App.prototype.setChipActive = function (container, value) {
         el.classList[el.dataset.value == value ? "add" : "remove"]("active");
     });
     localStorage.setItem(`ePubViewer:${container}`, value);
-    this.applyTheme();
-    if (this.state.rendition && this.state.rendition.location) this.onRenditionRelocatedUpdateIndicators(this.state.rendition.location);
+    if (container === "vertical-scroll") {
+        this.reloadBook();
+    } else {
+        this.applyTheme();
+        if (this.state.rendition && this.state.rendition.location) this.onRenditionRelocatedUpdateIndicators(this.state.rendition.location);
+    }
     return value;
 };
 
