@@ -300,11 +300,16 @@ App.prototype.onBookReady = function (event) {
     }).catch(err => console.error("error generating locations", err));
 };
 
+App.prototype.userInitiated = false;
+
 App.prototype.onTocItemClick = function (href, event) {
     console.log("tocClick", href);
+    this.userInitiated = true;
     this.state.rendition.display(href).catch(err => console.warn("error displaying page", err));
     event.stopPropagation();
     event.preventDefault();
+    this.qsa(".toc-list .item").forEach(el => el.classList.remove("active"));
+    this.qs(`[href='${href}']`).classList.add('active');
 };
 
 App.prototype.getNavItem = function(loc, ignoreHash) {
@@ -335,12 +340,17 @@ App.prototype.onNavigationLoaded = function (nav) {
 };
 
 App.prototype.onRenditionRelocated = function (event) {
-    try {this.doDictionary(null);} catch (err) {}
-    try {
-        let navItem = this.getNavItem(event, false) || this.getNavItem(event, true);
-        this.qsa(".toc-list .item").forEach(el => el.classList[(navItem && el.dataset.href == navItem.href) ? "add" : "remove"]("active"));
-    } catch (err) {
-        this.fatal("error updating toc", err);
+    console.log('firi!ng!', event);
+    if (this.userInitiated) {
+        this.userInitiated = false;
+    } else {
+        try {this.doDictionary(null);} catch (err) {}
+        try {
+            let navItem = this.getNavItem(event, false) || this.getNavItem(event, true);
+            this.qsa(".toc-list .item").forEach(el => el.classList[(navItem && el.dataset.href == navItem.href) ? "add" : "remove"]("active"));
+        } catch (err) {
+            this.fatal("error updating toc", err);
+        }
     }
 };
 
