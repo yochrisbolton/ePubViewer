@@ -7,7 +7,7 @@
 		exports["ePub"] = factory(require("xmldom"), (function webpackLoadOptionalExternalModule() { try { return require("jszip"); } catch(e) {} }()));
 	else
 		root["ePub"] = factory(root["xmldom"], root["jszip"]);
-})(typeof self !== 'undefined' ? self : this, function(__WEBPACK_EXTERNAL_MODULE_16__, __WEBPACK_EXTERNAL_MODULE_68__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_16__, __WEBPACK_EXTERNAL_MODULE_68__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -4971,8 +4971,7 @@ var Contents = function () {
 			if (axis === "vertical") {
 				this.css("padding", gap / 2 + "px 20px", true);
 			} else {
-				this.css("padding-left", gap / 2 + "px", true);
-				this.css("padding-right", gap / 2 + "px", true);
+				this.css("padding", "20px " + gap / 2 + "px", true);
 			}
 
 			this.css("box-sizing", "border-box");
@@ -8892,15 +8891,13 @@ var IframeView = function () {
 				this.stopExpanding = true;
 				this.element.removeChild(this.iframe);
 
-				this.iframe = undefined;
-				this.contents = undefined;
+				this.iframe = null;
 
 				this._textWidth = null;
 				this._textHeight = null;
 				this._width = null;
 				this._height = null;
 			}
-
 			// this.element.style.height = "0px";
 			// this.element.style.width = "0px";
 		}
@@ -9028,11 +9025,9 @@ function debounce(func, wait, options) {
   function remainingWait(time) {
     var timeSinceLastCall = time - lastCallTime,
         timeSinceLastInvoke = time - lastInvokeTime,
-        timeWaiting = wait - timeSinceLastCall;
+        result = wait - timeSinceLastCall;
 
-    return maxing
-      ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
-      : timeWaiting;
+    return maxing ? nativeMin(result, maxWait - timeSinceLastInvoke) : result;
   }
 
   function shouldInvoke(time) {
@@ -12167,9 +12162,6 @@ var Packaging = function () {
 			metadata.language = this.getElementText(xml, "language");
 			metadata.rights = this.getElementText(xml, "rights");
 
-			metadata.series = this.getMetaContent(xml, "calibre:series");
-			metadata.seriesIndex = this.getMetaContent(xml, "calibre:series_index");
-
 			metadata.modified_date = this.getPropertyText(xml, "dcterms:modified");
 
 			metadata.layout = this.getPropertyText(xml, "rendition:layout");
@@ -12370,26 +12362,6 @@ var Packaging = function () {
 
 			if (el && el.childNodes.length) {
 				return el.childNodes[0].nodeValue;
-			}
-
-			return "";
-		}
-
-		/**
-   * Get meta content
-   * @private
-   * @param  {document} xml
-   * @param  {string} name
-   * @return {string} text
-   */
-
-	}, {
-		key: 'getMetaContent',
-		value: function getMetaContent(xml, name) {
-			var el = (0, _core.qsp)(xml, "meta", { "name": name });
-
-			if (el && el.getAttribute("content")) {
-				return el.getAttribute("content");
 			}
 
 			return "";
@@ -16805,3 +16777,4 @@ module.exports = function(module) {
 /***/ })
 /******/ ]);
 });
+//# sourceMappingURL=epub.js.map

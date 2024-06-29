@@ -358,9 +358,6 @@ App.prototype.onBookMetadataLoaded = function (metadata) {
     console.log("metadata", metadata);
     this.qs(".info .title").innerText = metadata.title.trim();
     this.qs(".info .author").innerText = metadata.creator.trim();
-    if (!metadata.series || metadata.series.trim() == "") this.qs(".info .series-info").classList.add("hidden");
-    this.qs(".info .series-name").innerText = metadata.series.trim();
-    this.qs(".info .series-index").innerText = metadata.seriesIndex.trim();
 };
 
 App.prototype.onBookCoverLoaded = function (url) {
