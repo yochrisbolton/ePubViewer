@@ -101,7 +101,8 @@ App.prototype.doBook = function (url, opts) {
         this.qs(".book").innerHTML = "";
 
         let renditionOptions = {
-            width: "100%"
+            width: "100%",
+            method: 'continuous'
         };
         if (this.getChipActive("vertical-scroll") == "true") {
             renditionOptions.flow = "scrolled-doc";
@@ -134,6 +135,14 @@ App.prototype.doBook = function (url, opts) {
     if (this.getChipActive("vertical-scroll") == "true") {
         this.state.rendition.on("displayed", this.attachScrollListener.bind(this));
     }
+
+    window.addEventListener("enable_navigation", () => {
+        this.state.enable_navigation = true;
+    });
+
+    window.addEventListener("disable_navigation", () => {
+        this.state.enable_navigation = false;
+    });
 
     this.state.rendition.display();
 
@@ -375,6 +384,9 @@ App.prototype.onBookCoverLoaded = function (url) {
 };
 
 App.prototype.onKeyUp = function (event) {
+    event.preventDefault();
+    if(this.state.enable_navigation === false) return;
+    console.log('key up fired', this.state.enable_navigation)
     let kc = event.keyCode || event.which;
     let b = null;
     if (kc == 37) {
@@ -407,10 +419,12 @@ App.prototype.onRenditionClick = function (event) {
         event.preventDefault();
     } else if (x < third) {
         event.preventDefault();
+        if(!this.state.enable_navigation) return;
         this.state.rendition.prev();
         b = this.qs(".bar button.prev");
     } else if (x > (third * 2)) {
         event.preventDefault();
+        if(!this.state.enable_navigation) return;
         this.state.rendition.next();
         b = this.qs(".bar button.next");
     }
@@ -434,6 +448,8 @@ App.prototype.onRenditionDisplayedTouchSwipe = function (event) {
 
         let hr = (end.screenX - start.screenX) / el.getBoundingClientRect().width;
         let vr = (end.screenY - start.screenY) / el.getBoundingClientRect().height;
+
+        if(!this.state.enable_navigation) return;
 
         if (hr > vr && hr > 0.25) return this.state.rendition.prev();
         if (hr < vr && hr < -0.25) return this.state.rendition.next();

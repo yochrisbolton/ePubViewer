@@ -8409,6 +8409,8 @@ var IframeView = function () {
 			// if Frame is still hidden, so needs reframing
 			if (this._needsReframe || width != this._width || height != this._height) {
 				console.log(debounce)
+				const event = new Event('disable_navigation');
+				window.dispatchEvent(event);
 				this.debouncedReframe(width, height);
 			}
 
@@ -8451,7 +8453,9 @@ var IframeView = function () {
 			this.prevBounds = size;
 
 			this.elementBounds = (0, _core.bounds)(this.element);
-			console.log('done')
+			console.log('done')			
+			const test = new Event('enable_navigation');
+			window.dispatchEvent(test);
 		}
 	}, {
 		key: "load",
