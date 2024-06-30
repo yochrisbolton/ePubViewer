@@ -8451,6 +8451,7 @@ var IframeView = function () {
 			this.prevBounds = size;
 
 			this.elementBounds = (0, _core.bounds)(this.element);
+			console.log('done')
 		}
 	}, {
 		key: "load",

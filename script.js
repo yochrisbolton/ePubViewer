@@ -421,6 +421,7 @@ App.prototype.onRenditionClick = function (event) {
 };
 
 App.prototype.onRenditionDisplayedTouchSwipe = function (event) {
+    console.log('rendered!!')
     let start = null
     let end = null;
     const el = event.document.documentElement;
