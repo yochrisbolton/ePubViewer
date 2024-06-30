@@ -8105,12 +8105,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function debounce(func, wait) {
+function debounce(func, wait, immediate) {
 	let timeout;
 	return function() {
 		const context = this, args = arguments;
+		const later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		const callNow = immediate && !timeout;
 		clearTimeout(timeout);
-		timeout = setTimeout(() => func.apply(context, args), wait);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
 	};
 }
 
@@ -8158,7 +8164,7 @@ var IframeView = function () {
 		this.marks = {};
 
 		this.reframe = this.reframe.bind(this);
-		this.debouncedReframe = debounce(this.reframe, 500);
+		this.debouncedReframe = debounce(this.reframe, 500, false);
 	}
 
 	_createClass(IframeView, [{
