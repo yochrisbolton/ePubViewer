@@ -48,13 +48,13 @@ let App = function (el) {
         }));
     });
     this.qs("button.prev").addEventListener("click", () => {
-        if(!this.state.enable_navigation) return;
-        this.state.rendition.prev()
+        if (!this.state.enable_navigation) return;
+        this.state.rendition.prev();
     });
     this.qs("button.next").addEventListener("click", () => {
-        if(!this.state.enable_navigation) return;
-        this.state.rendition.next()}
-    );
+        if (!this.state.enable_navigation) return;
+        this.state.rendition.next();
+    });
 
     try {
         this.qs(".bar .loc").style.cursor = "pointer";
@@ -63,7 +63,7 @@ let App = function (el) {
                 let answer = prompt(`Location to go to (up to ${this.state.book.locations.length()})?`, this.state.rendition.currentLocation().start.location);
                 if (!answer) return;
                 answer = answer.trim();
-                if (answer == "") return;
+                if (answer === "") return;
 
                 let parsed = parseInt(answer, 10);
                 if (isNaN(parsed) || parsed < 0) throw new Error("Invalid location: not a positive integer");
@@ -109,7 +109,7 @@ App.prototype.doBook = function (url, opts) {
         this.qs(".book").innerHTML = "";
 
         let renditionOptions = {};
-        if (this.getChipActive("vertical-scroll") == "true") {
+        if (this.getChipActive("vertical-scroll") === "true") {
             renditionOptions.flow = "scrolled-doc";
         }
 
@@ -137,7 +137,7 @@ App.prototype.doBook = function (url, opts) {
     this.state.rendition.on("started", this.onRenditionStartedRestorePos.bind(this));
     this.state.rendition.on("displayError", this.fatal.bind(this, "error rendering book"));
 
-    if (this.getChipActive("vertical-scroll") == "true") {
+    if (this.getChipActive("vertical-scroll") === "true") {
         this.state.rendition.on("displayed", this.attachScrollListener.bind(this));
     }
 
@@ -149,7 +149,15 @@ App.prototype.doBook = function (url, opts) {
         this.state.enable_navigation = false;
     });
 
-    this.state.rendition.display();
+    // Initial display after book is ready
+    this.state.book.ready.then(() => {
+        const storedPos = localStorage.getItem(`${this.state.book.key()}:pos`);
+        if (storedPos) {
+            this.state.rendition.display(storedPos);
+        } else {
+            this.state.rendition.display();
+        }
+    });
 
     if (this.state.dictInterval) window.clearInterval(this.state.dictInterval);
     this.state.dictInterval = window.setInterval(this.checkDictionary.bind(this), 50);
@@ -197,7 +205,7 @@ App.prototype.setDefaultChipActive = function (container) {
 
 App.prototype.setChipActive = function (container, value) {
     Array.from(this.qs(`.chips[data-chips='${container}']`).querySelectorAll(".chip[data-value]")).forEach(el => {
-        el.classList[el.dataset.value == value ? "add" : "remove"]("active");
+        el.classList[el.dataset.value === value ? "add" : "remove"]("active");
     });
     localStorage.setItem(`ePubViewer:${container}`, value);
     if (container === "vertical-scroll") {
@@ -356,7 +364,7 @@ App.prototype.onNavigationLoaded = function (nav) {
 };
 
 App.prototype.onRenditionRelocated = function (event) {
-    console.log('firi!ng!', event);
+    console.log('firing!', event);
     if (this.userInitiated) {
         this.userInitiated = false;
     } else {
@@ -390,8 +398,8 @@ App.prototype.onBookCoverLoaded = function (url) {
 
 App.prototype.onKeyUp = function (event) {
     event.preventDefault();
-    if(this.state.enable_navigation === false) return;
-    console.log('key up fired', this.state.enable_navigation)
+    if (this.state.enable_navigation === false) return;
+    console.log('key up fired', this.state.enable_navigation);
     let kc = event.keyCode || event.which;
     let b = null;
     if (kc == 37) {
@@ -409,9 +417,9 @@ App.prototype.onKeyUp = function (event) {
 
 App.prototype.onRenditionClick = function (event) {
     try {
-        if (this.getChipActive("disable-click-scroll") == "true") return;
-        if (event.target.tagName.toLowerCase() == "a" && event.target.href) return;
-        if (event.target.parentNode.tagName.toLowerCase() == "a" && event.target.parentNode.href) return;
+        if (this.getChipActive("disable-click-scroll") === "true") return;
+        if (event.target.tagName.toLowerCase() === "a" && event.target.href) return;
+        if (event.target.parentNode.tagName.toLowerCase() === "a" && event.target.parentNode.href) return;
         if (window.getSelection().toString().length !== 0) return;
         if (this.state.rendition.manager.getContents()[0].window.getSelection().toString().length !== 0) return;
     } catch (err) {}
@@ -438,7 +446,7 @@ App.prototype.onRenditionClick = function (event) {
 };
 
 App.prototype.onRenditionDisplayedTouchSwipe = function (event) {
-    let start = null
+    let start = null;
     let end = null;
     const el = event.document.documentElement;
 
@@ -451,7 +459,7 @@ App.prototype.onRenditionDisplayedTouchSwipe = function (event) {
         let hr = (end.screenX - start.screenX) / el.getBoundingClientRect().width;
         let vr = (end.screenY - start.screenY) / el.getBoundingClientRect().height;
 
-        if(!this.state.enable_navigation) return;
+        if (!this.state.enable_navigation) return;
 
         if (hr > vr && hr > 0.25) return this.state.rendition.prev();
         if (hr < vr && hr < -0.25) return this.state.rendition.next();
@@ -476,16 +484,16 @@ App.prototype.applyTheme = function () {
         "body": {
             "background": theme.bg,
             "color": theme.fg,
-            "font-family": theme.ff != "" ? `${theme.ff} !important` : "!invalid-hack",
-            "font-size": theme.fs != "" ? `${theme.fs} !important` : "!invalid-hack",
+            "font-family": theme.ff !== "" ? `${theme.ff} !important` : "!invalid-hack",
+            "font-size": theme.fs !== "" ? `${theme.fs} !important` : "!invalid-hack",
             "line-height": `${theme.lh} !important`,
             "text-align": `${theme.ta} !important`,
             "padding-top": theme.m,
             "padding-bottom": theme.m
         },
         "p": {
-            "font-family": theme.ff != "" ? `${theme.ff} !important` : "!invalid-hack",
-            "font-size": theme.fs != "" ? `${theme.fs} !important` : "!invalid-hack",
+            "font-family": theme.ff !== "" ? `${theme.ff} !important` : "!invalid-hack",
+            "font-size": theme.fs !== "" ? `${theme.fs} !important` : "!invalid-hack",
         },
         "a": {
             "color": "inherit !important",
@@ -509,13 +517,13 @@ App.prototype.applyTheme = function () {
         this.ael.style.background = theme.bg;
         this.ael.style.fontFamily = theme.ff;
         this.ael.style.color = theme.fg;
-        if(this.state.rendition) this.state.rendition.getContents().forEach(c => c.addStylesheetRules(rules));
+        if (this.state.rendition) this.state.rendition.getContents().forEach(c => c.addStylesheetRules(rules));
     } catch (err) {
         console.error("error applying theme", err);
     }
 };
 
-App.prototype.loadFonts = function() {
+App.prototype.loadFonts = function () {
     this.state.rendition.getContents().forEach(c => {
         [
             "https://fonts.googleapis.com/css?family=Arbutus+Slab",
@@ -530,7 +538,7 @@ App.prototype.loadFonts = function() {
 
 App.prototype.onRenditionRelocatedUpdateIndicators = function (event) {
     try {
-        if (this.getChipActive("progress") == "bar") {
+        if (this.getChipActive("progress") === "bar") {
             // TODO: don't recreate every time the location changes.
             this.qs(".bar .loc").innerHTML = "";
             
@@ -559,8 +567,7 @@ App.prototype.onRenditionRelocatedUpdateIndicators = function (event) {
             for (let i = 0, last = -1; i < this.state.book.locations.length(); i++) {
                 try {
                     let parsed = new ePub.CFI().parse(this.state.book.locations.cfiFromLocation(i));
-                    if (parsed.spinePos < 0 || parsed.spinePos == last)
-                        continue;
+                    if (parsed.spinePos < 0 || parsed.spinePos === last) continue;
                     last = parsed.spinePos;
 
                     let marker = markers.appendChild(document.createElement("div"));
@@ -585,19 +592,22 @@ App.prototype.onRenditionRelocatedUpdateIndicators = function (event) {
         }
 
         let stxt = "Loading";
-        if (this.getChipActive("progress") == "none") {
+        console.log('what')
+        if (this.getChipActive("progress") === "none") {
+            console.log('its none')
             stxt = "";
-        } else if (this.getChipActive("progress") == "location" && event.start.location > 0) {
-            stxt = `Loc ${event.start.location}/${this.state.book.locations.length()}`
-        } else if (this.getChipActive("progress") == "chapter") {
+        } else if (this.getChipActive("progress") === "location" && event.start.location > 0) {
+            console.log('AHHA')
+            stxt = `Loc ${event.start.location}/${this.state.book.locations.length()}`;
+        } else if (this.getChipActive("progress") === "chapter") {
             let navItem = this.getNavItem(event, false) || this.getNavItem(event, true);
             stxt = navItem ? navItem.label.trim() : (event.start.percentage > 0 && event.start.percentage < 1) ? `${Math.round(event.start.percentage * 100)}%` : "";
         } else {
-            stxt = (event.start.percentage > 0 && event.start.percentage < 1) ? `${Math.round(event.start.percentage * 1000)/10}%` : "";
+            stxt = (event.start.percentage > 0 && event.start.percentage < 1) ? `${Math.round(event.start.percentage * 1000) / 10}%` : "";
         }
         this.qs(".bar .loc").innerHTML = stxt;
     } catch (err) {
-        console.error("error updating indicators");
+        console.error("error updating indicators", err);
     }
 };
 
@@ -627,13 +637,17 @@ App.prototype.checkDictionary = function () {
             try {
                 let newSelection = this.state.rendition.manager.getContents()[0].window.getSelection().toString().trim();
                 if (newSelection == selection) this.doDictionary(newSelection);
-            } catch (err) {console.error(`showDictTimeout: ${err.toString()}`)}
+            } catch (err) {
+                console.error(`showDictTimeout: ${err.toString()}`);
+            }
         }, 300);
-    } catch (err) {console.error(`checkDictionary: ${err.toString()}`)}
+    } catch (err) {
+        console.error(`checkDictionary: ${err.toString()}`);
+    }
 };
 
 App.prototype.doDictionary = function (word) {
-    if (this.state.lastWord) if (this.state.lastWord == word) return;
+    if (this.state.lastWord && this.state.lastWord === word) return;
     this.state.lastWord = word;
 
     if (!this.qs(".dictionary-wrapper").classList.contains("hidden")) console.log("hide dictionary");
@@ -658,10 +672,10 @@ App.prototype.doDictionary = function (word) {
 
     fetch(`https://dict.api.pgaskin.net/word/${encodeURIComponent(word)}`).then(resp => {
         if (resp.status >= 500) throw new Error(`Dictionary not available`);
-        if (resp.status == 404) throw new Error(`Word not found`);
+        if (resp.status === 404) throw new Error(`Word not found`);
         return resp.json();
     }).then(obj => {
-        if (obj.status == "error") throw new Error(`ApiError: ${obj.result}`);
+        if (obj.status === "error") throw new Error(`ApiError: ${obj.result}`);
         return obj.result;
     }).then(obj => {
         console.log("dictLookup", obj);
@@ -679,7 +693,7 @@ App.prototype.doDictionary = function (word) {
             let meaningsEl = definitionEl.appendChild(document.createElement("div"));
             meaningsEl.classList.add("meanings");
 
-            if (word.info && word.info.trim() != "") {
+            if (word.info && word.info.trim() !== "") {
                 let infoEl = meaningsEl.appendChild(document.createElement("div"));
                 infoEl.classList.add("info");
                 infoEl.innerText = word.info;
@@ -693,7 +707,7 @@ App.prototype.doDictionary = function (word) {
                 meaningTextEl.classList.add("text");
                 meaningTextEl.innerText = `${i + 1}. ${meaning.text}`;
 
-                if (meaning.example && meaning.example.trim() != "") {
+                if (meaning.example && meaning.example.trim() !== "") {
                     let meaningExampleEl = meaningEl.appendChild(document.createElement("div"));
                     meaningExampleEl.classList.add("example");
                     meaningExampleEl.innerText = meaning.example;
@@ -706,7 +720,7 @@ App.prototype.doDictionary = function (word) {
                 noteEl.innerText = note;
             });
         
-            if (word.credit && word.credit.trim() != "") {
+            if (word.credit && word.credit.trim() !== "") {
                 let creditEl = meaningsEl.appendChild(document.createElement("div"));
                 creditEl.classList.add("credit");
                 creditEl.innerText = word.credit;
@@ -750,7 +764,7 @@ App.prototype.doSearch = function (q) {
 
 App.prototype.onResultClick = function (href, event) {
     console.log("tocClick", href);
-        this.state.rendition.display(href).then(() => {
+    this.state.rendition.display(href).then(() => {
         this.highlightTextInBook(this.qs(".sidebar .search-bar .search-box").value.trim());
     });
     event.stopPropagation();
@@ -788,8 +802,8 @@ App.prototype.highlightTextInBook = function (query) {
 
 App.prototype.doTab = function (tab) {
     try {
-        this.qsa(".tab-list .item").forEach(el => el.classList[(el.dataset.tab == tab) ? "add" : "remove"]("active"));
-        this.qsa(".tab-container .tab").forEach(el => el.classList[(el.dataset.tab != tab) ? "add" : "remove"]("hidden"));
+        this.qsa(".tab-list .item").forEach(el => el.classList[(el.dataset.tab === tab) ? "add" : "remove"]("active"));
+        this.qsa(".tab-container .tab").forEach(el => el.classList[(el.dataset.tab !== tab) ? "add" : "remove"]("hidden"));
         try {
             this.qs(".tab-container").scrollTop = 0;
         } catch (err) {}
@@ -840,11 +854,13 @@ try {
     }
     if (ufn) {
         fetch(ufn).then(resp => {
-            if (resp.status != 200) throw new Error("response status: " + resp.status.toString() + " " + resp.statusText);
+            if (resp.status !== 200) throw new Error("response status: " + resp.status.toString() + " " + resp.statusText);
+            return resp.arrayBuffer();
+        }).then(data => {
+            ePubViewer.doBook(data, { encoding: "binary" });
         }).catch(err => {
             ePubViewer.fatal("error loading book", err, true);
         });
-        ePubViewer.doBook(ufn);
     }
 } catch (err) {
     document.querySelector(".app .error").classList.remove("hidden");
