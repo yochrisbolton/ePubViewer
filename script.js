@@ -47,8 +47,14 @@ let App = function (el) {
             this.setChipActive(el.dataset.chips, cel.dataset.value);
         }));
     });
-    this.qs("button.prev").addEventListener("click", () => this.state.rendition.prev());
-    this.qs("button.next").addEventListener("click", () => this.state.rendition.next());
+    this.qs("button.prev").addEventListener("click", () => {
+        if(!this.state.enable_navigation) return;
+        this.state.rendition.prev()
+    });
+    this.qs("button.next").addEventListener("click", () => {
+        if(!this.state.enable_navigation) return;
+        this.state.rendition.next()}
+    );
 
     try {
         this.qs(".bar .loc").style.cursor = "pointer";
@@ -419,12 +425,10 @@ App.prototype.onRenditionClick = function (event) {
         event.preventDefault();
     } else if (x < third) {
         event.preventDefault();
-        if(!this.state.enable_navigation) return;
         this.state.rendition.prev();
         b = this.qs(".bar button.prev");
     } else if (x > (third * 2)) {
         event.preventDefault();
-        if(!this.state.enable_navigation) return;
         this.state.rendition.next();
         b = this.qs(".bar button.next");
     }
@@ -435,7 +439,6 @@ App.prototype.onRenditionClick = function (event) {
 };
 
 App.prototype.onRenditionDisplayedTouchSwipe = function (event) {
-    console.log('rendered!!')
     let start = null
     let end = null;
     const el = event.document.documentElement;
@@ -856,3 +859,22 @@ try {
         if (!isRavenDisabled) Raven.captureException(err);
     } catch (err) {}
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const toggleButton = document.getElementById("toggleSidebar");
+    const sidebar = document.querySelector(".sidebar");
+    const main = document.querySelector(".main");
+
+    toggleButton.addEventListener("click", function() {
+        sidebar.classList.toggle("hidden");
+        main.classList.toggle("sidebar-hidden");
+        if (sidebar.classList.contains("hidden")) {
+            toggleButton.innerHTML = '<i class="icon material-icons-outlined">menu</i> Show Sidebar';
+        } else {
+            toggleButton.innerHTML = '<i class="icon material-icons-outlined">menu</i> Hide Sidebar';
+        }
+
+        const resizeEvent = new Event('resize');
+        window.dispatchEvent(resizeEvent);
+    });
+});
