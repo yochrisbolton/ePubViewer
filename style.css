@@ -64,6 +64,10 @@
     height: 44px;
     line-height: 44px;
     padding: 0 10px;
+    width: calc(100% - 300px);
+    position: absolute;
+    bottom: 0;
+    right: 0;
 
     >div {
       flex: 0 0 auto;
@@ -85,7 +89,7 @@
     flex-direction: row;
     align-items: stretch;
     justify-content: stretch;
-    height: 100%;
+    height: calc(100% - 44px);
     width: calc(100% - 300px);
 
     >div {
@@ -324,6 +328,12 @@
       }
     }
 
+    .search-container {
+      position: sticky;
+      top: 0;
+      background: #ebebeb;
+    }
+
     .search-bar {
       display: flex;
       flex-direction: row;
@@ -331,9 +341,16 @@
       justify-content: flex-start;
       background: #fff;
       margin: 8px;
+      margin-top: 0;
+      padding: 3px 6px;
       border-radius: 4px;
-      box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, .15);
-      border: 1px solid #ddd;
+      border: 2px solid #ddd;
+      transition: border .15s cubic-bezier(0.23, 1, 0.32, 1);
+
+      &:hover,
+      &:active {
+        border: 2px solid black;
+      }
 
       .search-box {
         flex: 1;
@@ -358,12 +375,10 @@
         border: 0;
         box-shadow: none;
         font-size: inherit;
-        padding: 4px;
+        padding: 4px 6px;
         border-top-right-radius: inherit;
         border-bottom-right-radius: inherit;
         outline: 0;
-        border-left: 1px solid #ddd;
-        width: 32px;
         text-align: center;
         cursor: pointer;
         -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
@@ -393,10 +408,12 @@
         margin: 8px;
         border-radius: 4px;
         font-size: 12px;
-        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, .15);
+        padding: 8px;
+        border: 2px solid #ddd;
+        transition: border .15s cubic-bezier(0.23, 1, 0.32, 1);
 
         &:hover {
-          background: rgba(0, 0, 0, 0.05);
+          border: 2px solid black;
         }
 
         .text {
@@ -406,6 +423,7 @@
 
         .pbar {
           background: #ddd;
+          display: none;
 
           .pbar-inner {
             height: 1px;

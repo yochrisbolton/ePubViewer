@@ -8156,9 +8156,9 @@ var IframeView = function () {
 		this.highlights = {};
 		this.underlines = {};
 		this.marks = {};
-		
+
 		this.reframe = this.reframe.bind(this);
-		this.debouncedReframe = debounce(this.reframe, 300);
+		this.debouncedReframe = debounce(this.reframe, 500);
 	}
 
 	_createClass(IframeView, [{
