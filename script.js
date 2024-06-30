@@ -100,7 +100,9 @@ App.prototype.doBook = function (url, opts) {
         this.state.book = ePub(url, opts);
         this.qs(".book").innerHTML = "";
 
-        let renditionOptions = {};
+        let renditionOptions = {
+            width: "100%"
+        };
         if (this.getChipActive("vertical-scroll") == "true") {
             renditionOptions.flow = "scrolled-doc";
         }

@@ -8105,6 +8105,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function debounce(func, wait) {
+	let timeout;
+	return function() {
+		const context = this, args = arguments;
+		clearTimeout(timeout);
+		timeout = setTimeout(() => func.apply(context, args), wait);
+	};
+}
+
 var IframeView = function () {
 	function IframeView(section, options) {
 		_classCallCheck(this, IframeView);
@@ -8147,6 +8156,9 @@ var IframeView = function () {
 		this.highlights = {};
 		this.underlines = {};
 		this.marks = {};
+		
+		this.reframe = this.reframe.bind(this);
+		this.debouncedReframe = debounce(this.reframe, 300);
 	}
 
 	_createClass(IframeView, [{
@@ -8396,7 +8408,8 @@ var IframeView = function () {
 			// Only Resize if dimensions have changed or
 			// if Frame is still hidden, so needs reframing
 			if (this._needsReframe || width != this._width || height != this._height) {
-				this.reframe(width, height);
+				console.log(debounce)
+				this.debouncedReframe(width, height);
 			}
 
 			this._expanding = false;
@@ -8404,6 +8417,7 @@ var IframeView = function () {
 	}, {
 		key: "reframe",
 		value: function reframe(width, height) {
+			if (!this.iframe) return
 			var size;
 
 			if ((0, _core.isNumber)(width)) {
@@ -8901,7 +8915,8 @@ var IframeView = function () {
 			// this.element.style.height = "0px";
 			// this.element.style.width = "0px";
 		}
-	}]);
+	}
+]);
 
 	return IframeView;
 }();
