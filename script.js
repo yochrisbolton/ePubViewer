@@ -96,6 +96,8 @@ let App = function (el) {
 App.prototype.doBook = function (url, opts) {
     this.qs(".book").innerHTML = "Loading";
 
+    this.state.enable_navigation = true;
+
     opts = opts || {
         encoding: "epub"
     };
@@ -106,10 +108,7 @@ App.prototype.doBook = function (url, opts) {
         this.state.book = ePub(url, opts);
         this.qs(".book").innerHTML = "";
 
-        let renditionOptions = {
-            width: "100%",
-            method: 'continuous'
-        };
+        let renditionOptions = {};
         if (this.getChipActive("vertical-scroll") == "true") {
             renditionOptions.flow = "scrolled-doc";
         }
