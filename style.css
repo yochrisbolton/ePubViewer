@@ -580,6 +580,10 @@
   background: #ff0;
 }
 
+.series-info {
+  display: none;
+}
+
 @media only screen and (max-width: 950px) {
   .app {
     .bar {
