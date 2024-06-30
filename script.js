@@ -731,9 +731,40 @@ App.prototype.doSearch = function (q) {
 
 App.prototype.onResultClick = function (href, event) {
     console.log("tocClick", href);
-    this.state.rendition.display(href);
+        this.state.rendition.display(href).then(() => {
+        this.highlightTextInBook(this.qs(".sidebar .search-bar .search-box").value.trim());
+    });
     event.stopPropagation();
     event.preventDefault();
+};
+
+App.prototype.highlightTextInBook = function (query) {
+    const iframe = this.state.rendition.manager.getContents()[0].document;
+    const regex = new RegExp(`(${query})`, 'gi');
+
+    const highlightNode = (node) => {
+        if (node.nodeType === 3) { // Text node
+            const match = node.data.match(regex);
+            if (match) {
+                const span = document.createElement('span');
+                span.className = 'highlight';
+                const highlightedText = node.data.replace(regex, '<span class="highlight" style="background: yellow; font-weight: bold;">$1</span>');
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = highlightedText;
+                while (tempDiv.firstChild) {
+                    span.appendChild(tempDiv.firstChild);
+                }
+                node.parentNode.replaceChild(span, node);
+            }
+        } else if (node.nodeType === 1 && node.childNodes && !/script|style/i.test(node.tagName)) {
+            for (let i = 0; i < node.childNodes.length; i++) {
+                highlightNode(node.childNodes[i]);
+            }
+        }
+    };
+
+    const body = iframe.body;
+    highlightNode(body);
 };
 
 App.prototype.doTab = function (tab) {
@@ -756,7 +787,8 @@ App.prototype.onTabClick = function (tab, event) {
 };
 
 App.prototype.onSearchClick = function (event) {
-    this.doSearch(this.qs(".sidebar .search-bar .search-box").value.trim()).then(results => {
+    const query = this.qs(".sidebar .search-bar .search-box").value.trim();
+    this.doSearch(query).then(results => {
         this.qs(".sidebar .search-results").innerHTML = "";
         let resultsEl = document.createDocumentFragment();
         results.slice(0, 200).forEach(result => {
@@ -765,12 +797,17 @@ App.prototype.onSearchClick = function (event) {
             resultEl.addEventListener("click", this.onResultClick.bind(this, result.cfi));
 
             let textEl = resultEl.appendChild(this.el("div", "text"));
-            textEl.innerText = result.excerpt.trim();
+            textEl.innerHTML = this.highlightText(result.excerpt.trim(), query);
 
-            resultEl.appendChild(this.el("div", "pbar")).appendChild(this.el("div", "pbar-inner")).style.width = (this.state.book.locations.percentageFromCfi(result.cfi)*100).toFixed(3) + "%";
+            resultEl.appendChild(this.el("div", "pbar")).appendChild(this.el("div", "pbar-inner")).style.width = (this.state.book.locations.percentageFromCfi(result.cfi) * 100).toFixed(3) + "%";
         });
         this.qs(".app .sidebar .search-results").appendChild(resultsEl);
     }).catch(err => this.fatal("error searching book", err));
+};
+
+App.prototype.highlightText = function (text, query) {
+    const regex = new RegExp(`(${query})`, 'gi');
+    return text.replace(regex, '<span class="highlight">$1</span>');
 };
 
 let ePubViewer = null;
