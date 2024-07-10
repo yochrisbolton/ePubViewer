@@ -143,6 +143,7 @@ App.prototype.doBook = function (url, opts) {
 
     window.addEventListener("enable_navigation", () => {
         this.state.enable_navigation = true;
+        this.initialSetup();
     });
 
     window.addEventListener("disable_navigation", () => {
@@ -162,6 +163,16 @@ App.prototype.doBook = function (url, opts) {
     if (this.state.dictInterval) window.clearInterval(this.state.dictInterval);
     this.state.dictInterval = window.setInterval(this.checkDictionary.bind(this), 50);
     this.doDictionary(null);
+};
+
+App.prototype.initialSetup = function() {
+    // TODO: make this less hacky
+    const currentLocation = this.state.rendition.currentLocation();
+    if (currentLocation && currentLocation.start) {
+        this.onRenditionRelocatedUpdateIndicators(currentLocation);
+         this.state.rendition.next();
+         this.state.rendition.prev();
+    }
 };
 
 App.prototype.attachScrollListener = function () {
