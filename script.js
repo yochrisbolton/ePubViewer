@@ -281,9 +281,6 @@ App.prototype.doReset = function () {
     this.qs(".toc-list").innerHTML = "";
     this.qs(".info .cover").src = "";
     this.qs(".info .title").innerHTML = "";
-    this.qs(".info .series-info").classList.remove("hidden");
-    this.qs(".info .series-name").innerHTML = "";
-    this.qs(".info .series-index").innerHTML = "";
     this.qs(".info .author").innerHTML = "";
     this.qs(".book").innerHTML = '<div class="empty-wrapper"><div class="empty"><div class="app-name">ePubViewer</div><div class="message"><a href="javascript:ePubViewer.doOpenBook();" class="big-button">Open a Book</a></div></div></div>';
     this.qs(".bar button.prev").classList.add("hidden");
@@ -876,20 +873,22 @@ try {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    const toggleButton = document.getElementById("toggleSidebar");
+    const toggleButtons = document.querySelectorAll(".toggle-sidebar");
     const sidebar = document.querySelector(".sidebar");
     const main = document.querySelector(".main");
 
-    toggleButton.addEventListener("click", function() {
-        sidebar.classList.toggle("hidden");
-        main.classList.toggle("sidebar-hidden");
-        if (sidebar.classList.contains("hidden")) {
-            toggleButton.innerHTML = '<i class="icon material-icons-outlined">menu</i> Show Sidebar';
-        } else {
-            toggleButton.innerHTML = '<i class="icon material-icons-outlined">menu</i> Hide Sidebar';
-        }
+    toggleButtons.forEach(toggleButton => {
+        toggleButton.addEventListener("click", function() {
+            sidebar.classList.toggle("hidden");
+            main.classList.toggle("sidebar-hidden");
+            if (sidebar.classList.contains("hidden")) {
+                toggleButton.innerHTML = '<i class="icon material-icons-outlined">menu</i>';
+            } else {
+                toggleButton.innerHTML = '<i class="icon material-icons-outlined">menu</i>';
+            }
 
-        const resizeEvent = new Event('resize');
-        window.dispatchEvent(resizeEvent);
-    });
+            const resizeEvent = new Event('resize');
+            window.dispatchEvent(resizeEvent);
+        });
+    })
 });

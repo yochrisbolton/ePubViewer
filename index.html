@@ -18,9 +18,9 @@
 
 <body>
     <div class="app">
-        <button id="toggleSidebar" class="toggle-sidebar">
-            <i class="icon material-icons-outlined">menu</i> Show Sidebar
-        </button>
+        <span class="toggle-sidebar toggle-main" title="Open Sidebar">
+            <i class="icon material-icons-outlined">menu</i>
+        </span>
         <div class="dictionary-wrapper hidden">
             <div class="dictionary"></div>
         </div>
@@ -32,17 +32,20 @@
         </div>
         <div class="main">
             <div class="sidebar">
+                <div class="actions">
+                    <button>Go Back</button>
+                    <div class="right">
+                        <span class="toggle-sidebar" title="Close Sidebar">
+                            <i class="icon material-icons-outlined">menu</i>
+                        </span>
+                    </div>
+                </div>
                 <div class="tab info" data-tab="info">
                     <div class="cover-wrapper">
                         <img src="" alt="" class="cover">
                     </div>
                     <div class="row">
                         <div class="title"></div>
-                        <div class="series-info">
-                            <span class="series-name"></span>
-                            <span class="divider"> - </span>
-                            <span class="series-index"></span>
-                        </div>
                         <div class="author"></div>
                     </div>
                 </div>
@@ -186,12 +189,15 @@
                 <div class="tab-list">
                     <a data-tab="toc" class="item">
                         <i class="icon material-icons-outlined">list</i>
+                        Chapters
                     </a>
                     <a data-tab="search" class="item">
                         <i class="icon material-icons-outlined">search</i>
+                        Search
                     </a>
                     <a data-tab="settings" class="item">
                         <i class="icon material-icons-outlined">settings</i>
+                        Settings
                     </a>
                 </div>
             </div>
