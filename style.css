@@ -661,3 +661,13 @@
 .bookmark .icon {
   font-size: 24px;
 }
+
+.bookmark-link a {
+  color: black;
+}
+
+.bookmarks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

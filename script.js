@@ -358,11 +358,19 @@ App.prototype.userInitiated = false;
 App.prototype.onTocItemClick = function (href, event) {
     console.log("tocClick", href);
     this.userInitiated = true;
-    this.state.rendition.display(href).catch(err => console.warn("error displaying page", err));
     event.stopPropagation();
     event.preventDefault();
-    this.qsa(".toc-list .item").forEach(el => el.classList.remove("active"));
-    this.qs(`[href='${href}']`).classList.add('active');
+
+    this.state.rendition.display(href).then(() => {
+        return this.state.rendition.once("locationChanged", () => {
+            this.qsa(".toc-list .item").forEach(el => el.classList.remove("active"));
+            this.qs(`[href='${href}']`).classList.add('active');
+            return this.state.rendition.display(href);
+        });
+    }).catch(err => {
+        console.warn("error displaying page", err);
+        this.fatal("error displaying page", err);
+    });
 };
 
 App.prototype.getNavItem = function(loc, ignoreHash) {
