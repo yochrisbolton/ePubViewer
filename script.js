@@ -175,12 +175,25 @@ App.prototype.doBook = function (url, opts) {
 };
 
 App.prototype.initialSetup = function() {
-    // TODO: make this less hacky
+    const currentLocation = this.state.rendition.currentLocation();
+
+    if (currentLocation && currentLocation.start) {
+        this.state.rendition.reportLocation();
+    } else {
+        this.state.rendition.display().then(() => {
+            this.state.rendition.reportLocation();
+        }).catch(err => {
+            this.fatal("error during initial setup", err);
+        });
+    }
+
+    this.updateUI();
+};
+
+App.prototype.updateUI = function() {
     const currentLocation = this.state.rendition.currentLocation();
     if (currentLocation && currentLocation.start) {
         this.onRenditionRelocatedUpdateIndicators(currentLocation);
-         this.state.rendition.next();
-         this.state.rendition.prev();
     }
 };
 
