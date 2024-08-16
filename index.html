@@ -31,6 +31,9 @@
             <div class="error-dump"></div>
         </div>
         <div class="main">
+            <div class="bookmark">
+                <i class="icon material-icons-outlined" title="Bookmark this page">bookmark_border</i>
+            </div>
             <div class="sidebar">
                 <div class="actions">
                     <button>Go Back</button>
@@ -63,6 +66,11 @@
                             </div>
                         </div>
                         <div class="search-results"></div>
+                    </div>
+                    <div class="tab bookmarks" data-tab="bookmarks">
+                        <div class="bookmarks">
+                            HI!
+                        </div>
                     </div>
                     <div class="tab settings" data-tab="settings">
                         <div class="setting">
@@ -195,6 +203,10 @@
                         <i class="icon material-icons-outlined">search</i>
                         Search
                     </a>
+                    <a data-tab="bookmarks" class="item">
+                        <i class="icon material-icons-outlined">bookmark</i>
+                        Bookmarks
+                    </a>
                     <a data-tab="settings" class="item">
                         <i class="icon material-icons-outlined">settings</i>
                         Settings
@@ -256,16 +268,6 @@
     </script>
 
     <script src="script.js"></script>
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-66226417-1"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-        gtag('config', 'UA-66226417-1');
-    </script>
 </body>
 
 </html>

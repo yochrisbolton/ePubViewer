@@ -155,15 +155,19 @@ App.prototype.doBook = function (url, opts) {
         this.state.enable_navigation = false;
     });
 
-    // Initial display after book is ready
+// Ensuring that loadBookmarks is called only after the rendition is ready
     this.state.book.ready.then(() => {
         const storedPos = localStorage.getItem(`${this.state.book.key()}:pos`);
         if (storedPos) {
-            this.state.rendition.display(storedPos);
+            this.state.rendition.display(storedPos).then(() => {
+                this.loadBookmarks();  // Call loadBookmarks after displaying the stored position
+            });
         } else {
-            this.state.rendition.display();
+            this.state.rendition.display().then(() => {
+                this.loadBookmarks();  // Call loadBookmarks after the initial display
+            });
         }
-    });
+    }).catch(this.fatal.bind(this, "error loading book"));
 
     if (this.state.dictInterval) window.clearInterval(this.state.dictInterval);
     this.state.dictInterval = window.setInterval(this.checkDictionary.bind(this), 50);
@@ -350,13 +354,12 @@ App.prototype.onTocItemClick = function (href, event) {
 };
 
 App.prototype.getNavItem = function(loc, ignoreHash) {
-    return (function flatten(arr) {
-        return [].concat(...arr.map(v => [v, ...flatten(v.subitems)]));
-    })(this.state.book.navigation.toc).filter(
-        item => ignoreHash ?
-            this.state.book.canonical(item.href).split("#")[0] == this.state.book.canonical(loc.start.href).split("#")[0] :
-            this.state.book.canonical(item.href) == this.state.book.canonical(loc.start.href)
-    )[0] || null;
+    const tocItems = [].concat(...this.state.book.navigation.toc.map(item => [item, ...item.subitems]));
+    return tocItems.find(item => {
+        const itemHref = this.state.book.canonical(item.href);
+        const locHref = this.state.book.canonical(loc.start.href);
+        return ignoreHash ? itemHref.split("#")[0] === locHref.split("#")[0] : itemHref === locHref;
+    }) || null;
 };
 
 App.prototype.onNavigationLoaded = function (nav) {
@@ -377,6 +380,8 @@ App.prototype.onNavigationLoaded = function (nav) {
 };
 
 App.prototype.onRenditionRelocated = function (event) {
+    this.loadBookmarks();
+
     console.log('firing!', event);
     if (this.userInitiated) {
         this.userInitiated = false;
@@ -605,7 +610,6 @@ App.prototype.onRenditionRelocatedUpdateIndicators = function (event) {
         }
 
         let stxt = "Loading";
-        console.log('what')
         if (this.getChipActive("progress") === "none") {
             console.log('its none')
             stxt = "";
@@ -888,6 +892,76 @@ try {
     } catch (err) {}
 }
 
+App.prototype.toggleBookmark = function () {
+    const currentLocation = this.state.rendition.currentLocation();
+    const bookmarkKey = `${this.state.book.key()}:bookmarks`;
+    let bookmarks = JSON.parse(localStorage.getItem(bookmarkKey)) || [];
+
+    // Retrieve the chapter title using the `getNavItem` method
+    const navItem = this.getNavItem(currentLocation, true);
+    const chapter = navItem ? navItem.label : 'Unknown Chapter';
+    const page = currentLocation.start.location; // Assuming page number from location
+    const percentage = (currentLocation.start.percentage * 100).toFixed(2);
+
+    const existingBookmarkIndex = bookmarks.findIndex(b => b.cfi === currentLocation.start.cfi);
+
+    if (existingBookmarkIndex !== -1) {
+        bookmarks.splice(existingBookmarkIndex, 1); // Remove bookmark
+        this.qs(".bookmark i").textContent = "bookmark_border";
+    } else {
+        bookmarks.push({
+            cfi: currentLocation.start.cfi,
+            chapter: chapter,
+            page: page,
+            percentage: percentage
+        });
+        this.qs(".bookmark i").textContent = "bookmark";
+    }
+
+    localStorage.setItem(bookmarkKey, JSON.stringify(bookmarks));
+};
+
+App.prototype.loadBookmarks = function () {
+    const bookmarkKey = `${this.state.book.key()}:bookmarks`;
+    const bookmarks = JSON.parse(localStorage.getItem(bookmarkKey)) || [];
+
+    const bookmarksContainer = document.querySelector('[data-tab="bookmarks"] .bookmarks');
+    bookmarksContainer.innerHTML = ''; // Clear any existing bookmarks
+
+    bookmarks.forEach(bookmark => {
+        const bookmarkEl = document.createElement('div');
+        bookmarkEl.classList.add('bookmark-link');
+
+        bookmarkEl.innerHTML = `
+            <a href="#" data-cfi="${bookmark.cfi}">
+                ${bookmark.chapter} - Page ${bookmark.page} (${bookmark.percentage}%)
+            </a>
+        `;
+        bookmarksContainer.appendChild(bookmarkEl);
+    });
+
+    // Ensure that the rendition and manager are ready and currentLocation has a valid start
+    if (this.state.rendition && this.state.rendition.manager) {
+        const currentLocation = this.state.rendition.currentLocation();
+        if (currentLocation && currentLocation.start && bookmarks.some(b => b.cfi === currentLocation.start.cfi)) {
+            this.qs(".bookmark i").textContent = "bookmark";
+        } else {
+            this.qs(".bookmark i").textContent = "bookmark_border";
+        }
+    } else {
+        console.warn('Rendition or manager is not ready, skipping bookmark state update');
+    }
+
+    // Add event listener to handle bookmark clicks
+    bookmarksContainer.querySelectorAll('a[data-cfi]').forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const cfi = event.target.getAttribute('data-cfi');
+            this.state.rendition.display(cfi);
+        });
+    });
+};
+
 document.addEventListener("DOMContentLoaded", function() {
     const toggleButtons = document.querySelectorAll(".toggle-sidebar");
     const sidebar = document.querySelector(".sidebar");
@@ -907,4 +981,9 @@ document.addEventListener("DOMContentLoaded", function() {
             window.dispatchEvent(resizeEvent);
         });
     })
+
+    const bookmarkButton = document.querySelector(".bookmark");
+    bookmarkButton.addEventListener("click", function() {
+        ePubViewer.toggleBookmark();
+    });
 });
