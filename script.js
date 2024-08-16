@@ -134,7 +134,6 @@ App.prototype.doBook = function (url, opts) {
     this.state.rendition.hooks.content.register(this.loadFonts.bind(this));
 
     this.state.rendition.on("relocated", this.onRenditionRelocated.bind(this));
-    this.state.rendition.on("click", this.onRenditionClick.bind(this));
     this.state.rendition.on("keyup", this.onKeyUp.bind(this));
     this.state.rendition.on("displayed", this.onRenditionDisplayedTouchSwipe.bind(this));
     this.state.rendition.on("relocated", this.onRenditionRelocatedUpdateIndicators.bind(this));
@@ -221,7 +220,7 @@ App.prototype.reloadBook = function () {
 };
 
 App.prototype.loadSettingsFromStorage = function () {
-    ["theme", "font", "font-size", "line-spacing", "margin", "progress", "disable-click-scroll", "vertical-scroll"].forEach(container => this.restoreChipActive(container));
+    ["theme", "font", "font-size", "line-spacing", "margin", "progress", "vertical-scroll"].forEach(container => this.restoreChipActive(container));
 };
 
 App.prototype.restoreChipActive = function (container) {
@@ -439,36 +438,6 @@ App.prototype.onKeyUp = function (event) {
     } else if (kc == 39) {
         this.state.rendition.next();
         b = this.qs(".app .bar button.next");
-    }
-    if (b) {
-        b.style.transform = "scale(1.15)";
-        window.setTimeout(() => b.style.transform = "", 150);
-    }
-};
-
-App.prototype.onRenditionClick = function (event) {
-    try {
-        if (this.getChipActive("disable-click-scroll") === "true") return;
-        if (event.target.tagName.toLowerCase() === "a" && event.target.href) return;
-        if (event.target.parentNode.tagName.toLowerCase() === "a" && event.target.parentNode.href) return;
-        if (window.getSelection().toString().length !== 0) return;
-        if (this.state.rendition.manager.getContents()[0].window.getSelection().toString().length !== 0) return;
-    } catch (err) {}
-
-    let wrapper = this.state.rendition.manager.container;
-    let third = wrapper.clientWidth / 3;
-    let x = event.pageX - wrapper.scrollLeft;
-    let b = null;
-    if (x > wrapper.clientWidth - 20) {
-        event.preventDefault();
-    } else if (x < third) {
-        event.preventDefault();
-        this.state.rendition.prev();
-        b = this.qs(".bar button.prev");
-    } else if (x > (third * 2)) {
-        event.preventDefault();
-        this.state.rendition.next();
-        b = this.qs(".bar button.next");
     }
     if (b) {
         b.style.transform = "scale(1.15)";
