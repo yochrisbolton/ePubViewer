@@ -1,5 +1,10 @@
 "use strict";
 
+// TODO:
+// - change link color
+// - search needs to go right to the search result
+// - menu icon in sidebar needs to be changed (x button?)
+
 function isRavenDisabled() {
     try {
         if (typeof disableRaven !== 'undefined' && disableRaven) return true;
